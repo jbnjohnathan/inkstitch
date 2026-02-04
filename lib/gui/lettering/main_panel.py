@@ -187,13 +187,18 @@ class LetteringPanel(wx.Panel):
         try:
             font = self.fonts_by_id[font_id].marked_custom_font_name
         except KeyError:
-            font = self.default_font.marked_custom_font_name
+            default = self.default_font
+            if default is None:
+                return
+            font = default.marked_custom_font_name
         self.options_panel.font_chooser.SetValue(font)
 
         self.on_font_changed()
 
     @property
     def default_font(self):
+        if not self.fonts:
+            return None
         try:
             return self.fonts[global_settings['last_font']]
         except KeyError:
@@ -226,6 +231,8 @@ class LetteringPanel(wx.Panel):
 
     def on_font_changed(self, event=None):
         font = self.fonts.get(self.options_panel.font_chooser.GetValue(), self.default_font)
+        if font is None:
+            return
         self.settings.font = font.marked_custom_font_id
         global_settings['last_font'] = font.marked_custom_font_name
 
@@ -314,6 +321,8 @@ class LetteringPanel(wx.Panel):
         self.group.append(destination_group)
 
         font = self.fonts.get(self.options_panel.font_chooser.GetValue(), self.default_font)
+        if font is None:
+            return
         destination_group.label = f"{font.name} {_('scale')} {self.settings.scale}%"
         try:
             font.render_text(
