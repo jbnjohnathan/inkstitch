@@ -128,7 +128,8 @@ def activate_for_frozen():
 def frozen_debug_active():
     loglevel = os.environ.get('INKSTITCH_LOGLEVEL')  # read log level from environment variable or None
     docpath = os.environ.get('DOCUMENT_PATH')  # read document path from environment variable (set by inkscape) or None
-    if docpath is not None and loglevel is not None and loglevel.upper() in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
+    # Check that docpath is not None/empty and has a valid filename (not just '.' or '')
+    if docpath and loglevel and Path(docpath).name and loglevel.upper() in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
         return True
     return False
 
